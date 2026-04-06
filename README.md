@@ -23,7 +23,7 @@ npm run build
 
 ### Running the server
 
-**Streamable HTTP (default)** — starts on port 3001, supports multiple concurrent agents:
+**Streamable HTTP (default)** — starts on port 3001 and supports multiple concurrent sessions:
 
 ```bash
 npm start                    # http://localhost:3001/mcp
@@ -35,6 +35,15 @@ npm start -- --port=8080     # custom port
 ```bash
 npm run start:stdio
 ```
+
+### HTTP endpoints
+
+When running with HTTP transport, the server exposes:
+
+- `GET /health` - operational status, uptime, active sessions, and memory metrics
+- `POST /mcp` - JSON-RPC endpoint (session initialize + requests)
+- `GET /mcp` - SSE stream for server-initiated messages
+- `DELETE /mcp` - terminate an active MCP session
 
 ### Use with Claude Desktop / Cursor
 
@@ -69,9 +78,11 @@ npm run start:stdio
 | Primitive | Name | Description |
 |-----------|------|-------------|
 | **Tool** | `list_categories` | List all 39 design pattern categories |
+| **Tool** | `list_patterns` | List all patterns for a category slug |
 | **Tool** | `search_patterns` | Search patterns by name, alias, or description |
 | **Tool** | `get_pattern_prompt` | Get a pattern's prompt in textual, HTML, or TSX format |
 | **Tool** | `get_implementation` | Get implementation code with design guidance |
+| **Tool** | `audit_implementation` | Audit submitted HTML/TSX against reference pattern traits and get concrete CSS fixes |
 | **Prompt** | `implement_component` | Generate a full implementation prompt for a pattern |
 | **Prompt** | `review_against_pattern` | Review code against a canonical pattern |
 | **Prompt** | `suggest_design_system` | Suggest patterns for a UI description |
@@ -88,6 +99,13 @@ cd mcp-server
 npm run extract-data
 npm run build
 ```
+
+### Typical MCP workflow
+
+1. Call `list_categories`
+2. Call `list_patterns` or `search_patterns`
+3. Fetch content with `get_pattern_prompt` or `get_implementation`
+4. Validate output with `audit_implementation` before finalizing UI code
 
 
 ## Screenshots
